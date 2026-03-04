@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baño Oficina</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#f4f4f4;
+}
+
+.card {
+  width:90%;
+  max-width:400px;
+  background:white;
+  border-radius:20px;
+  padding:40px 20px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.estado {
+  font-size:40px;
+  margin-bottom:30px;
+  font-weight:bold;
+}
+
+.ocupado { color:red; }
+.disponible { color:green; }
+
+button {
+  width:100%;
+  padding:15px;
+  font-size:18px;
+  border:none;
+  border-radius:12px;
+  color:white;
+  cursor:pointer;
+}
+
+.btn-rojo { background:red; }
+.btn-verde { background:green; }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div id="estado" class="estado">Cargando...</div>
+  <button id="boton"></button>
+</div>
+
+<script>
+const url = "https://script.google.com/macros/s/AKfycbwTXeQM_kdFWbrF-8Kb2-mnOu5AvQIv9vco8Qr-3moNZCaELuEN5EPkRf9DuScYrlqAsQ/exec";
+
+async function actualizar() {
+  const res = await fetch(url);
+  const texto = await res.text();
+
+  const estadoDiv = document.getElementById("estado");
+  const boton = document.getElementById("boton");
+
+  if(texto === "Ocupado"){
+    estadoDiv.innerHTML = "🔴 Ocupado";
+    estadoDiv.className = "estado ocupado";
+    boton.innerHTML = "Liberar baño";
+    boton.className = "btn-verde";
+    boton.onclick = () => cambiar("Disponible");
+  } else {
+    estadoDiv.innerHTML = "🟢 Disponible";
+    estadoDiv.className = "estado disponible";
+    boton.innerHTML = "Ocupar baño";
+    boton.className = "btn-rojo";
+    boton.onclick = () => cambiar("Ocupado");
+  }
+}
+
+async function cambiar(nuevo){
+  await fetch(url + "?estado=" + nuevo);
+  actualizar();
+}
+
+setInterval(actualizar, 3000);
+actualizar();
+</script>
+
+</body>
+</html>
